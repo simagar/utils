@@ -64,6 +64,16 @@ export function useUtils() {
         }
     }
 
+    function isUsingPWA(): boolean {
+        //@ts-ignore
+        if (!navigator?.standalone && !window.matchMedia("(display-mode: standalone)").matches) {
+            // not using pwa
+            return false
+        }
+        // using pwa
+        return true
+    }
+
     function time_ago(time: string | number): string | number {
         switch (typeof time) {
             case 'number':
