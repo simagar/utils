@@ -20,29 +20,37 @@ export function useUtils() {
     function generateAnyFormData(data: any) {
         const formData = new FormData()
 
-        Object.keys(data).forEach((key: string) => {
+
+        Object.keys(data).forEach(key => {
             if (data && data[key]) {
-                if (!isArray(data[key])) {
-                    if (typeof data[key] === 'object') {
-                        Object.keys(data[key]).forEach((objKey) => {
-                            formData.append(`${key}.${objKey}`, data[key][objKey])
-                        })
-                    } else {
+                if (!Array.isArray(data[key])) {
+                    if (data[key] instanceof File) {
                         formData.append(key, data[key])
                     }
-                } else if (isArray(data[key])) {
-                    data[key].forEach((arrayItem: any, index: number) => {
-                        if (typeof arrayItem == 'object') {
+                    else if (typeof data[key] === 'object') {
+                        Object.keys(data[key]).forEach(objKey => {
+                            formData.append(`${key}.${objKey}`, data[key][objKey])
+                        })
+                    }
+                    else {
+                        formData.append(key, data[key])
+                    }
+                }
+                else if (Array.isArray(data[key])) {
+                    data[key].forEach(arrayItem => {
+                        if (typeof arrayItem == 'object' && !(arrayItem instanceof File)) {
                             Object.keys(arrayItem).forEach(innerKey => {
-                                formData.append(`${key}[${index}].${innerKey}`, arrayItem[innerKey])
+                                formData.append(`${key}.${innerKey}`, arrayItem[innerKey])
                             })
-                        } else {
-                            formData.append(`${key}[${index}]`, arrayItem)
+                        }
+                        else {
+                            formData.append(`${key}`, arrayItem)
                         }
                     })
                 }
             }
         })
+
         return formData
     }
 
